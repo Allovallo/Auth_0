@@ -3,6 +3,7 @@ const cors = require("cors");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs/promises");
+const { nanoid } = require("nanoid");
 
 const app = express();
 
@@ -30,12 +31,25 @@ app.get("/api/books", (req, res) => {
 
 // upload.fields([{name: 'cover', maxCount: 1}, {name: 'subcover', maxCount: 2}])
 // upload.array('cover', 8)
-
-
+const bookDir = path.join(__dirname, "public", "books");
 app.post("/api/books", upload.single("cover"), async (req, res) => {
   // console.log(req.body);
   // console.log(req.file);
-  await fs.rename("./temp/cover.jpg", "./public/books/cover.jpg");
+  const { path: tempUpload, originalname } = req.file;
+  const resultUpload = path.join(bookDir, originalname);
+  await fs.rename(tempUpload, resultUpload);
+
+  const cover = path.join("public", "books", originalname);
+
+  const newBook = {
+    id: nanoid(),
+    ...req.body,
+    cover,
+  };
+  books.push(newBook);
+
+  res.status(201).json(newBook);
 });
 
 app.listen(3000);
+
