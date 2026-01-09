@@ -9,6 +9,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use(express.static("public"));
 
 const tempDir = path.join(__dirname, "temp");
 console.log(__dirname);
@@ -39,7 +40,7 @@ app.post("/api/books", upload.single("cover"), async (req, res) => {
   const resultUpload = path.join(bookDir, originalname);
   await fs.rename(tempUpload, resultUpload);
 
-  const cover = path.join("public", "books", originalname);
+  const cover = path.join("books", originalname);
 
   const newBook = {
     id: nanoid(),
@@ -52,4 +53,3 @@ app.post("/api/books", upload.single("cover"), async (req, res) => {
 });
 
 app.listen(3000);
-
